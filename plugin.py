@@ -1,7 +1,7 @@
 # Plugin that makes it easier to install other plugins. Just insert the URL.
 # It checks if the URL in the input field was already installed in a previous round.
 """
-<plugin key="python_plugin_installer" name="Python Plugin installer" author="blauwebuis" version="1.0.0" wikilink="http://www.domoticz.com/wiki/plugins/plugin.html" externallink="https://www.domoticz.com/">
+<plugin key="python_plugin_installer" name="Python Plugin installer" author="blauwebuis" version="1.0.0" wikilink="http://www.domoticz.com/wiki/plugins/plugin.html" externallink="https://www.domoticz.com/forum/viewtopic.php?f=65&t=22310">
 	<params>
 		<param field="Mode1" label="Plugin URL (ending with .zip)" width="300px" required="false" default=""/>
 	</params>
@@ -26,7 +26,7 @@ class BasePlugin:
 		return
 
 	def onStart(self):
-		#Domoticz.Debugging(1)
+		Domoticz.Debugging(1)
 		
 		self.dirName = os.path.dirname(__file__)
 		
@@ -92,7 +92,14 @@ class BasePlugin:
 		#	Domoticz.Log("git file")
 		
 		else:
-			Domoticz.Error("Not a correct URL. It must start with http and end with .zip")	
+			if pluginUrl != "":
+				Domoticz.Error("Not a correct URL. It must start with http and end with .zip")
+			else:
+				Domoticz.Log("no url provided")
+				databaseFile = self.dirName + "/pythonPluginsInstaller"
+				database = shelve.open(databaseFile)
+				database['lastInstalledPluginUrl'] = [""]
+				database.close()
 		
 		return
 			
