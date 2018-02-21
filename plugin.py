@@ -26,7 +26,7 @@ class BasePlugin:
 		return
 
 	def onStart(self):
-		Domoticz.Debugging(1)
+		#Domoticz.Debugging(1)
 		
 		self.dirName = os.path.dirname(__file__)
 		
