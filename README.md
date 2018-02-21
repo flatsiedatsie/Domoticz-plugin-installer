@@ -1,5 +1,5 @@
 # Domoticz-plugin-installer
-A python plugin that makes it really easy to install other python plugins
+A python plugin that makes it really easy to install other python plugins.
 
 Just paste in the URL into this plugin's input field, and it will do the rest.
 
