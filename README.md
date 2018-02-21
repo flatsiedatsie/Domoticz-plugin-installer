@@ -8,6 +8,7 @@ Just paste in the URL into this plugin's input field, and it will do the rest.
 - It checks to see that it hasn't already processed the current URL (and that it's a valid URL).
 
 ## Installing
-Follow the standard plugin instructions. It may be the last time that you have to follow them :-)
+Follow the standard plugin installation instructions. It may be the last time that you have to follow them :-)
+
 https://www.domoticz.com/wiki/Using_Python_plugins
 
