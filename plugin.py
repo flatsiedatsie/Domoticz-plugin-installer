@@ -26,7 +26,7 @@ class BasePlugin:
 		return
 
 	def onStart(self):
-		#Domoticz.Debugging(1)
+		Domoticz.Debugging(1)
 		
 		self.dirName = os.path.dirname(__file__)
 		
@@ -34,8 +34,8 @@ class BasePlugin:
 		
 		pluginUrl = str(Parameters["Mode1"])
 		Domoticz.Log("Found plugin URL: " + pluginUrl)
-		pluginsFolder = self.dirName.rsplit('/', 1)
-		Domoticz.Debug("pluginsFolder = " + str(pluginsFolder[0]))
+		pluginsFolder = str(self.dirName.rsplit('/', 1)[0])
+		Domoticz.Debug("pluginsFolder = " + pluginsFolder)
 		
 		if pluginUrl.startswith("http") and pluginUrl.endswith(".zip"):
 			
@@ -43,32 +43,36 @@ class BasePlugin:
 			database = shelve.open(databaseFile)
 			try:
 				lastInstalledPlugin = str(database['lastInstalledPluginUrl'])
-				Domoticz.Debug("Previously installed plugin URL: " + str(lastInstalledPlugin))
+				Domoticz.Log("Previously installed plugin URL: " + str(lastInstalledPlugin))
 			except:
 				lastInstalledPlugin = ""
 				Domoticz.Debug("couldn't find which plugin was last installed")
-				database['lastInstalledPluginUrl'] = [""]
+				database['lastInstalledPluginUrl'] = ""
 			
 			if str(lastInstalledPlugin) != pluginUrl:
 				Domoticz.Log("INSTALLING NEW PLUGIN")
 				
 				try:
-					zipPath = pluginsFolder[0] + "/plugin.zip"
-					urllib.request.urlretrieve(pluginUrl, zipPath)
+					zipFile = pluginsFolder + "/plugin.zip"
+					Domoticz.Debug("zip file: " + str(zipFile))
+					urllib.request.urlretrieve(pluginUrl, zipFile)
 					try:
-						with zipfile.ZipFile(zipPath,"r") as zip_ref:
-							zip_ref.extractall()
-						database['lastInstalledPluginUrl'] = pluginUrl
+						with zipfile.ZipFile(zipFile,"r") as zip_ref:
+							zip_ref.extractall(pluginsFolder)
+							database['lastInstalledPluginUrl'] = pluginUrl
+							Domoticz.Log("unzipped plugin (in theory..)")
 					except:
 						Domoticz.Error("Unable to extract plugin zip file")
-
-					directories = os.listdir(pluginsFolder[0])
+						database['lastInstalledPluginUrl'] = ""
+					os.remove(zipFile)
+						
+					directories = os.listdir(pluginsFolder)
 					Domoticz.Log("You now have the following python plugins installed:")
 					for directory in directories:
-						possibleDirectory = pluginsFolder[0] + "/" + directory
+						possibleDirectory = pluginsFolder + "/" + directory
 						if os.path.isdir(possibleDirectory):
 							Domoticz.Log(directory)
-							startCommand = "sudo chmod +x " + pluginsFolder[0] + "/" + directory + "/plugin.py"
+							startCommand = "sudo chmod +x " + pluginsFolder + "/" + directory + "/plugin.py"
 							Domoticz.Debug(str(startCommand))
 							
 							try:
@@ -98,7 +102,7 @@ class BasePlugin:
 				Domoticz.Log("no url provided")
 				databaseFile = self.dirName + "/pythonPluginsInstaller"
 				database = shelve.open(databaseFile)
-				database['lastInstalledPluginUrl'] = [""]
+				database['lastInstalledPluginUrl'] = ""
 				database.close()
 		
 		return
